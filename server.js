@@ -487,7 +487,7 @@ app.post("/delete-chat",(req,res)=>{
         
            
            const cusername=req.body.cusername;
-           dc[i][cusername]=[];
+          dc[i][cusername]=["//me//:start chatting!"];
            fs.writeFileSync(__dirname + "/user.json", JSON.stringify(dc, null, 2), "utf-8");
             res.json({message:"ok"});
             break;
