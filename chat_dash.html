@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    <title>HeyChat</title>
+
+   
+</head>
+
+<body>
+    <div id="container_Chatting">
+      <div id="Headline"><h2 id="hey">Hey </h2><h2 id="chat">Chat!🙋‍♂️</h2></div>
+       <div id="userico2">
+        <div id="uc1">
+        <span id="userchat2"><i class="fa fa-user" id="fafauser2" aria-hidden="true"></i> ${cusername}<i id="fafauserdot" class="fa fa-circle" aria-hidden="true"></i></span>
+      </div>
+      <div id="uc2"><i class="fa fa-bars" id="fafamenubar" aria-hidden="true"></i></div>
+      </div>
+
+      <div id="myprofilediv2" style="display: none;">
+        <a href="/dashboard"><i class="fa fa-angle-right"></i><button id="back">back</button></a>
+        <a ><i class='fas fa-comment-slash'></i><button id="dchat">delete chat</button></a>
+        <a ><i class="fa fa-trash" aria-hidden="true"></i></i><button id="duser">delete user</button></a>
+      </div>
+
+      <div id="userenv">
+        
+       
+      </div>
+
+      <div id="inputmess"><input type="text" id="usermessagesend" required> <button id="sendbtn"><i class='fa fa-paper-plane' style='font-size:20px'></i></button></div>
+       </div>
+
+    <script>
+document.addEventListener("DOMContentLoaded",()=>{
+
+
+  function chatload() {
+    const cusername=document.getElementById("userchat2").textContent.trim();
+    console.log(cusername);
+ fetch("/chat-load",{
+  method:"POST",
+  headers:{
+    "Content-Type": "application/json" 
+  },
+  body:JSON.stringify({cusername})
+ })
+ 
+ .then(response=>response.json())
+ .then(data=>{
+
+let userenv=document.getElementById("userenv");
+userenv.innerHTML="";
+  for(let i=0;i<data.length;i++){
+    let message=data[i];
+
+           if (message.includes("//user//:")){
+            let newmess=message.replace("//user//:"," ");
+            userenv.innerHTML+='<div id="userchatdiv"><span id="userchattext">'+newmess+'</span></div>'
+            
+            
+           }
+           else{
+            let newmess=message.replace("//me//:"," ");
+            userenv.innerHTML+='<div id="mychatdiv"><span id="mychattext">'+newmess+'</span></div>';
+           }
+
+  }
+
+  userenv.scrollTop = userenv.scrollHeight;
+ })
+ .catch(error=>{
+  console.log("no mess fnd");
+ })
+}
+
+
+      setInterval(chatload,2000);
+
+
+      document.getElementById("sendbtn").addEventListener("click",()=>{
+
+        const umessage=document.getElementById("usermessagesend");
+        const usermessage=umessage.value;
+        umessage.value="";
+        const cusername=document.getElementById("userchat2").textContent.trim();
+    
+
+ fetch("/chat-sending",{
+  method:"POST",
+  headers:{
+    "Content-Type": "application/json" 
+  },
+  body:JSON.stringify({usermessage,cusername})
+ })
+ .catch(error=>{
+
+  console.log("error sending message!");
+ })
+ 
+
+      })
+
+
+})
+    
+
+document.getElementById("fafamenubar").addEventListener("click",()=>{
+              const mydiv=document.getElementById("myprofilediv2"); 
+              const icon = document.getElementById("fafamenubar");
+
+            if(mydiv.style.display=="none"){
+              mydiv.style.display="flex";
+              icon.classList.remove("fa-bars");
+              icon.classList.add("fa-x");
+            }
+            else{
+              mydiv.style.display="none";
+              icon.classList.remove("fa-x");
+              icon.classList.add("fa-bars");
+              
+            }
+
+      })
+
+      document.getElementById("dchat").addEventListener("click",()=>{
+
+const cusername=document.getElementById("userchat2").textContent.trim();
+
+
+fetch("/delete-chat",{
+method:"POST",
+headers:{
+"Content-Type": "application/json" 
+},
+body:JSON.stringify({cusername})
+})
+.then(response=>response.json())
+.then(data=>{
+   if(data.message=="ok"){
+    
+   }
+})
+.catch(error=>{
+
+console.log("error sending message!");
+})
+
+})
+
+document.getElementById("duser").addEventListener("click",()=>{
+
+const cusername=document.getElementById("userchat2").textContent.trim();
+
+
+fetch("/delete-user",{
+method:"POST",
+headers:{
+"Content-Type": "application/json" 
+},
+body:JSON.stringify({cusername})
+})
+.then(response=>response.json())
+.then(data=>{
+   if(data.message=="ok"){
+    window.location.href="/dashboard";
+   }
+})
+.catch(error=>{
+
+console.log("error sending message!");
+})
+
+})
+   
+    </script>
+</body>
+
+</html>
